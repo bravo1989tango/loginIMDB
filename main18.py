@@ -6,6 +6,7 @@
 # nehéz: classt készitünk
 # cim, leirás, imdb link
 
+import csv
 from flask import Flask, render_template, request, make_response
 
 app = Flask(__name__)
@@ -65,9 +66,11 @@ tizedik = filmek("The Lord of the Rings: The Fellowship of the Ring",
 
 filmek = [elso, masodik, harmadik, negyedik, otodik, hatodik, hetedik, nyolcadik, kilencedik, tizedik]
 
-users = {"tom@gmail.com": "1234", "lol@kuki.hu": "asd"}
 
-
+with open("users.csv","r") as regisztral:
+    reader = csv.reader(regisztral)
+    users = {rows[0]:rows[1] for rows in reader}
+    print(users)
 
 @app.route("/")
 def index():
@@ -84,6 +87,18 @@ def contact():
         response.set_cookie("username", username)  # cookie változó neve
     else:
         response = render_template("table.html")
+
+    return response
+
+@app.route("/reg", methods=["POST"])
+def reg():
+    username = request.form.get("regusername")
+    password = request.form.get("regpassword")
+
+    with open("users.csv", "a") as regisztral:
+        regisztral.write(username+","+password)
+    response = make_response(render_template("table.html", filmek=filmek, name = username))
+    response.set_cookie("username", username)  # cookie változó neve
 
     return response
 
