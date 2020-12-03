@@ -76,8 +76,6 @@ def contact():
     username = request.form.get("username")
     password = request.form.get("password")
 
-
-
     if username in users and users[username] == password:
         response = make_response(render_template("table.html", filmek=filmek, name = username))
         response.set_cookie("username", username)  # cookie változó neve
@@ -97,7 +95,7 @@ def reg():
     db.commit()
 
     with open("users.csv", "a") as regisztral:
-        regisztral.write(username+","+password)
+        regisztral.write(username+","+password+"\n")
     response = make_response(render_template("table.html", filmek=filmek, name = username))
     response.set_cookie("username", username)  # cookie változó neve
 
