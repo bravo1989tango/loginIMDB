@@ -1,16 +1,10 @@
-# házi
-# táblába töltsünk fel adatokat
-# listán for ciklussal és annyi sort irunk ki amennyi elem van
-# könnyű: lista listákat tartalmaz, mátrixot készitünk
-# közepes: dictionaryt készitünk
-# nehéz: classt készitünk
-# cim, leirás, imdb link
-
 import csv
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, redirect, url_for, make_response
+from imdbmodels import Imdbuser, db
+
 
 app = Flask(__name__)
-
+db.create_all()
 
 class filmek():
     def __init__(self, cim, leiras, IMDB):
@@ -82,6 +76,8 @@ def contact():
     username = request.form.get("username")
     password = request.form.get("password")
 
+
+
     if username in users and users[username] == password:
         response = make_response(render_template("table.html", filmek=filmek, name = username))
         response.set_cookie("username", username)  # cookie változó neve
@@ -94,6 +90,11 @@ def contact():
 def reg():
     username = request.form.get("regusername")
     password = request.form.get("regpassword")
+
+    user = Imdbuser(name=username, password=password)
+
+    db.add(user)
+    db.commit()
 
     with open("users.csv", "a") as regisztral:
         regisztral.write(username+","+password)
@@ -110,5 +111,3 @@ def kilepes():
 
 if __name__ == '__main__':
     app.run()
-
-# házi ha van bejelentkezett felhasználó akkor eltűnik a login és a filmek megjelennek
